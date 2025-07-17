@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Queue System</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- EmailJS Configuration -->
+    <script>
+        // EmailJS Configuration
+        const EMAILJS_CONFIG = {
+            USER_ID: '3Q85BwJ1qO4TtV5TU',
+            SERVICE_ID: 'service_i19rv6v',
+            TEMPLATES: {
+                QUEUE_JOIN: 'template_queue_join',
+                NEXT_IN_LINE: 'template_next_line'
+            }
+        };
+        
+        // Initialize EmailJS when library loads
+        window.addEventListener('load', function() {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init(EMAILJS_CONFIG.USER_ID);
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -157,7 +177,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="emailjs-config.js?v=2"></script>
     <script src="script.js"></script>
 </body>
 </html>
