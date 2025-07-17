@@ -14,7 +14,6 @@ class QueueSystem {
     init() {
         this.setupEventListeners();
         this.checkPortalAccess();
-        this.checkEmailLinkAccess();
         this.updateQueueStats();
         this.renderQueues();
         this.debugEmailJS();
@@ -167,6 +166,9 @@ class QueueSystem {
         console.log('📊 Final queue:', this.queue);
         console.log('📊 Final history:', this.history);
         console.log('📊 Final next number:', this.nextQueueNumber);
+        
+        // Check email link access after data is fully loaded
+        this.checkEmailLinkAccess();
     }
 
     // Save data to localStorage
