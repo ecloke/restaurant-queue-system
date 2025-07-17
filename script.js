@@ -17,6 +17,92 @@ class QueueSystem {
         this.checkEmailLinkAccess();
         this.updateQueueStats();
         this.renderQueues();
+        this.debugEmailJS();
+    }
+
+    // Debug EmailJS connection
+    debugEmailJS() {
+        console.log('🔍 ====== EmailJS CONNECTION STATUS ======');
+        
+        // Check EmailJS library
+        if (typeof emailjs === 'undefined') {
+            console.error('❌ EmailJS library NOT LOADED');
+            console.error('   Check if CDN script is working: https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js');
+            return;
+        } else {
+            console.log('✅ EmailJS library LOADED successfully');
+            console.log('   Available methods:', Object.keys(emailjs));
+        }
+        
+        // Check config file
+        if (typeof EMAILJS_CONFIG === 'undefined') {
+            console.error('❌ EMAILJS_CONFIG NOT LOADED');
+            console.error('   Check if emailjs-config.js file exists and is loaded');
+            return;
+        } else {
+            console.log('✅ EMAILJS_CONFIG LOADED successfully');
+            console.log('   Configuration:', {
+                USER_ID: EMAILJS_CONFIG.USER_ID,
+                SERVICE_ID: EMAILJS_CONFIG.SERVICE_ID,
+                TEMPLATES: EMAILJS_CONFIG.TEMPLATES
+            });
+        }
+        
+        // Check initialization
+        try {
+            if (emailjs.init) {
+                console.log('✅ EmailJS initialization function available');
+            } else {
+                console.error('❌ EmailJS.init not available');
+            }
+        } catch (error) {
+            console.error('❌ Error checking EmailJS initialization:', error);
+        }
+        
+        console.log('📧 EMAIL SENDING STATUS:');
+        console.log('   - When you join queue, detailed logs will appear here');
+        console.log('   - Look for "QUEUE JOIN EMAIL ATTEMPT" messages');
+        
+        console.log('🔍 ====== END CONNECTION STATUS ======');
+        
+        // Add a test button to global scope for manual testing
+        window.testEmailJS = this.testEmailJS.bind(this);
+        console.log('💡 Type "testEmailJS()" in console to test email sending');
+    }
+
+    // Test EmailJS connection
+    testEmailJS() {
+        console.log('=== Testing EmailJS Connection ===');
+        
+        if (typeof emailjs === 'undefined') {
+            console.error('❌ EmailJS not loaded');
+            return;
+        }
+        
+        if (typeof EMAILJS_CONFIG === 'undefined') {
+            console.error('❌ EMAILJS_CONFIG not loaded');
+            return;
+        }
+        
+        const testData = {
+            to_name: 'Test User',
+            to_email: 'test@example.com',
+            queue_number: 999,
+            position: 1,
+            total_people: 1,
+            wait_time: 5,
+            status_link: 'http://localhost:8000?phone=0123456789'
+        };
+        
+        console.log('Sending test email with data:', testData);
+        
+        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN, testData)
+            .then(response => {
+                console.log('✅ Test email sent successfully:', response);
+            })
+            .catch(error => {
+                console.error('❌ Test email failed:', error);
+            });
     }
 
     // Initialize sample data for demo
@@ -153,32 +239,42 @@ class QueueSystem {
     handleQueueSubmit(e) {
         e.preventDefault();
         
+        console.log('🎯 ====== QUEUE JOIN FORM SUBMITTED ======');
+        
         const formData = new FormData(e.target);
         const name = formData.get('customerName').trim();
         const phone = formData.get('customerPhone').trim();
         const email = formData.get('customerEmail').trim();
+        
+        console.log('📝 Form Data:', { name, phone, email });
 
         // Validation
         if (!name || !phone || !email) {
+            console.log('❌ Validation failed: Missing fields');
             alert('Please fill in all fields');
             return;
         }
 
         if (!this.validatePhone(phone)) {
+            console.log('❌ Validation failed: Invalid phone number:', phone);
             alert('Please enter a valid Malaysian phone number (01xxxxxxxx)');
             return;
         }
 
         if (!this.validateEmail(email)) {
+            console.log('❌ Validation failed: Invalid email:', email);
             alert('Please enter a valid email address');
             return;
         }
 
         // Check if phone already in queue
         if (this.queue.find(item => item.phone === phone)) {
+            console.log('❌ Validation failed: Phone already in queue:', phone);
             alert('This phone number is already in the queue');
             return;
         }
+
+        console.log('✅ Validation passed - adding to queue');
 
         // Add to queue
         const queueItem = {
@@ -194,6 +290,9 @@ class QueueSystem {
         this.updateQueueStats();
         this.renderQueues();
 
+        console.log('✅ Queue item created:', queueItem);
+        console.log('📧 Now attempting to send email...');
+
         // Send email notification
         this.sendQueueJoinEmail(queueItem);
 
@@ -202,6 +301,9 @@ class QueueSystem {
 
         // Reset form
         e.target.reset();
+        
+        console.log('✅ Form reset complete');
+        console.log('🎯 ====== QUEUE JOIN PROCESS COMPLETE ======');
     }
 
     showSuccessModal(queueItem) {
@@ -487,19 +589,75 @@ class QueueSystem {
         };
 
         // Send email using EmailJS
-        if (typeof EMAILJS_CONFIG !== 'undefined' && typeof emailjs !== 'undefined') {
-            emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN, emailData)
-                .then(response => {
-                    console.log('Queue join email sent successfully:', response);
-                })
-                .catch(error => {
-                    console.error('Email error:', error);
-                    // Fall back to demo mode if email fails
-                    console.log('Falling back to demo mode');
-                });
-        } else {
-            console.warn('EmailJS not configured. Running in demo mode.');
+        console.log('📧 ====== QUEUE JOIN EMAIL ATTEMPT ======');
+        console.log('🎯 Target Email:', queueItem.email);
+        console.log('📄 Email Data:', emailData);
+        
+        if (typeof EMAILJS_CONFIG === 'undefined') {
+            console.error('❌ CRITICAL: EMAILJS_CONFIG is not defined');
+            console.error('   ➜ Check if emailjs-config.js file exists and is loaded');
+            console.error('   ➜ Check browser network tab for 404 errors');
+            return;
         }
+        
+        if (typeof emailjs === 'undefined') {
+            console.error('❌ CRITICAL: EmailJS library is not loaded');
+            console.error('   ➜ Check if CDN script is working');
+            console.error('   ➜ Check browser network tab for script loading errors');
+            return;
+        }
+        
+        console.log('✅ Prerequisites checked - EmailJS and config loaded');
+        console.log('🔧 Using Service ID:', EMAILJS_CONFIG.SERVICE_ID);
+        console.log('📧 Using Template ID:', EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN);
+        console.log('👤 Using User ID:', EMAILJS_CONFIG.USER_ID);
+        
+        console.log('🚀 Sending email now...');
+        
+        const startTime = Date.now();
+        
+        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN, emailData)
+            .then(response => {
+                const duration = Date.now() - startTime;
+                console.log('✅ ====== EMAIL SENT SUCCESSFULLY ======');
+                console.log('📊 Response Status:', response.status);
+                console.log('📊 Response Text:', response.text);
+                console.log('⏱️ Send Duration:', duration + 'ms');
+                console.log('🎯 Email sent to:', queueItem.email);
+                console.log('✅ ====== EMAIL SUCCESS END ======');
+            })
+            .catch(error => {
+                const duration = Date.now() - startTime;
+                console.error('❌ ====== EMAIL SENDING FAILED ======');
+                console.error('⏱️ Failed after:', duration + 'ms');
+                console.error('📊 Error Status:', error.status);
+                console.error('📊 Error Text:', error.text);
+                console.error('📊 Error Message:', error.message);
+                console.error('📊 Full Error Object:', error);
+                
+                // Detailed error analysis
+                if (error.status === 400) {
+                    console.error('🔍 ERROR 400 - BAD REQUEST:');
+                    console.error('   ➜ Template ID "' + EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN + '" may not exist');
+                    console.error('   ➜ Check EmailJS dashboard for correct template ID');
+                    console.error('   ➜ Verify template variables match email data');
+                } else if (error.status === 403) {
+                    console.error('🔍 ERROR 403 - FORBIDDEN:');
+                    console.error('   ➜ User ID "' + EMAILJS_CONFIG.USER_ID + '" may be invalid');
+                    console.error('   ➜ Service ID "' + EMAILJS_CONFIG.SERVICE_ID + '" may be invalid');
+                    console.error('   ➜ Check EmailJS dashboard for correct credentials');
+                } else if (error.status === 404) {
+                    console.error('🔍 ERROR 404 - NOT FOUND:');
+                    console.error('   ➜ Service or template not found');
+                    console.error('   ➜ Double-check service ID and template ID');
+                } else {
+                    console.error('🔍 UNKNOWN ERROR:');
+                    console.error('   ➜ Check internet connection');
+                    console.error('   ➜ Check EmailJS service status');
+                }
+                
+                console.error('❌ ====== EMAIL FAILURE END ======');
+            });
 
         // For demo purposes, log the email content
         console.log('Queue Join Email (Demo):', {
