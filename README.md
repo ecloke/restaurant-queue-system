@@ -80,14 +80,39 @@ restaurant-queue-system/
    ```
 
 ### Netlify Deployment
-1. Build your site locally (if needed)
-2. Upload files to Netlify:
-   - Drag and drop the entire folder to [Netlify](https://netlify.com)
-   - Or connect your Git repository
-3. Configure redirects for portal access (optional):
+
+#### Option 1: Drag and Drop (Easiest)
+1. Go to [Netlify](https://netlify.com) and sign up/login
+2. Drag and drop your entire project folder to the deployment area
+3. Your site will be live immediately with a random URL
+
+#### Option 2: Git Repository (Recommended)
+1. Push your code to GitHub:
+   ```bash
+   # Create GitHub repository first, then:
+   git remote add origin https://github.com/yourusername/restaurant-queue-system.git
+   git branch -M main
+   git push -u origin main
    ```
-   /portal    /index.html    200
-   ```
+
+2. Connect to Netlify:
+   - Go to [Netlify](https://netlify.com)
+   - Click "New site from Git"
+   - Connect your GitHub repository
+   - Deploy settings: Leave defaults (build command: empty, publish directory: / )
+
+#### Post-Deployment Setup
+1. **EmailJS Configuration**: 
+   - Upload your `emailjs-config.js` file manually (it's git-ignored)
+   - Or set up environment variables in Netlify dashboard
+
+2. **Custom Domain** (optional):
+   - Go to Site settings → Domain management
+   - Add your custom domain
+
+3. **Portal Access**:
+   - Add `#portal` to your URL: `https://yoursite.netlify.app/#portal`
+   - Login: username `admin`, password `admin`
 
 ## Usage Guide
 
