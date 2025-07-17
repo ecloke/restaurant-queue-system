@@ -8,7 +8,7 @@ class QueueSystem {
         this.isLoggedIn = false;
         
         this.init();
-        this.loadSampleData();
+        this.loadFromStorage();
     }
 
     init() {
@@ -67,7 +67,9 @@ class QueueSystem {
         
         // Add a test button to global scope for manual testing
         window.testEmailJS = this.testEmailJS.bind(this);
+        window.clearQueueData = this.clearStorageData.bind(this);
         console.log('💡 Type "testEmailJS()" in console to test email sending');
+        console.log('💡 Type "clearQueueData()" in console to clear all queue data');
     }
 
     // Test EmailJS connection
@@ -103,6 +105,72 @@ class QueueSystem {
             .catch(error => {
                 console.error('❌ Test email failed:', error);
             });
+    }
+
+    // Load data from localStorage or initialize sample data
+    loadFromStorage() {
+        try {
+            const savedQueue = localStorage.getItem('restaurantQueue');
+            const savedHistory = localStorage.getItem('restaurantHistory');
+            const savedNextNumber = localStorage.getItem('restaurantNextNumber');
+            
+            if (savedQueue) {
+                this.queue = JSON.parse(savedQueue);
+                // Convert date strings back to Date objects
+                this.queue.forEach(item => {
+                    item.joinTime = new Date(item.joinTime);
+                });
+                console.log('✅ Queue loaded from storage:', this.queue.length, 'items');
+            }
+            
+            if (savedHistory) {
+                this.history = JSON.parse(savedHistory);
+                // Convert date strings back to Date objects
+                this.history.forEach(item => {
+                    item.joinTime = new Date(item.joinTime);
+                    if (item.completeTime) {
+                        item.completeTime = new Date(item.completeTime);
+                    }
+                });
+                console.log('✅ History loaded from storage:', this.history.length, 'items');
+            }
+            
+            if (savedNextNumber) {
+                this.nextQueueNumber = parseInt(savedNextNumber);
+                console.log('✅ Next queue number loaded:', this.nextQueueNumber);
+            }
+            
+            // If no data in storage, load sample data
+            if (!savedQueue && !savedHistory) {
+                console.log('📝 No saved data found, loading sample data');
+                this.loadSampleData();
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading from storage:', error);
+            this.loadSampleData();
+        }
+    }
+
+    // Save data to localStorage
+    saveToStorage() {
+        try {
+            localStorage.setItem('restaurantQueue', JSON.stringify(this.queue));
+            localStorage.setItem('restaurantHistory', JSON.stringify(this.history));
+            localStorage.setItem('restaurantNextNumber', this.nextQueueNumber.toString());
+            console.log('💾 Data saved to storage');
+        } catch (error) {
+            console.error('❌ Error saving to storage:', error);
+        }
+    }
+
+    // Clear all stored data (for testing)
+    clearStorageData() {
+        localStorage.removeItem('restaurantQueue');
+        localStorage.removeItem('restaurantHistory');
+        localStorage.removeItem('restaurantNextNumber');
+        console.log('🗑️ All queue data cleared from storage');
+        console.log('🔄 Refresh the page to see fresh sample data');
     }
 
     // Initialize sample data for demo
@@ -287,6 +355,7 @@ class QueueSystem {
         };
 
         this.queue.push(queueItem);
+        this.saveToStorage(); // Save to localStorage
         this.updateQueueStats();
         this.renderQueues();
 
@@ -372,6 +441,7 @@ class QueueSystem {
 
         // Remove from queue
         this.queue.splice(queueIndex, 1);
+        this.saveToStorage(); // Save to localStorage
 
         // Update displays
         this.updateQueueStats();
@@ -540,6 +610,7 @@ class QueueSystem {
 
         // Remove from queue
         this.queue.splice(queueIndex, 1);
+        this.saveToStorage(); // Save to localStorage
 
         // Update displays
         this.updateQueueStats();
@@ -566,6 +637,7 @@ class QueueSystem {
 
         // Remove from queue
         this.queue.splice(queueIndex, 1);
+        this.saveToStorage(); // Save to localStorage
 
         // Update displays
         this.updateQueueStats();
@@ -581,6 +653,8 @@ class QueueSystem {
         const emailData = {
             to_name: queueItem.name,
             to_email: queueItem.email,
+            from_name: 'Restaurant Queue System',
+            reply_to: queueItem.email,
             queue_number: queueItem.id,
             position: position,
             total_people: this.queue.length,
@@ -671,6 +745,8 @@ class QueueSystem {
         const emailData = {
             to_name: queueItem.name,
             to_email: queueItem.email,
+            from_name: 'Restaurant Queue System',
+            reply_to: queueItem.email,
             queue_number: queueItem.id
         };
 
