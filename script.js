@@ -109,10 +109,15 @@ class QueueSystem {
 
     // Load data from localStorage or initialize sample data
     loadFromStorage() {
+        console.log('🔍 ====== LOADING DATA FROM STORAGE ======');
         try {
             const savedQueue = localStorage.getItem('restaurantQueue');
             const savedHistory = localStorage.getItem('restaurantHistory');
             const savedNextNumber = localStorage.getItem('restaurantNextNumber');
+            
+            console.log('📦 Raw saved queue data:', savedQueue);
+            console.log('📦 Raw saved history data:', savedHistory);
+            console.log('📦 Raw saved next number:', savedNextNumber);
             
             if (savedQueue) {
                 this.queue = JSON.parse(savedQueue);
@@ -121,6 +126,9 @@ class QueueSystem {
                     item.joinTime = new Date(item.joinTime);
                 });
                 console.log('✅ Queue loaded from storage:', this.queue.length, 'items');
+                console.log('📋 Queue items:', this.queue);
+            } else {
+                console.log('❌ No saved queue data found');
             }
             
             if (savedHistory) {
@@ -133,11 +141,15 @@ class QueueSystem {
                     }
                 });
                 console.log('✅ History loaded from storage:', this.history.length, 'items');
+            } else {
+                console.log('❌ No saved history data found');
             }
             
             if (savedNextNumber) {
                 this.nextQueueNumber = parseInt(savedNextNumber);
                 console.log('✅ Next queue number loaded:', this.nextQueueNumber);
+            } else {
+                console.log('❌ No saved next number found');
             }
             
             // If no data in storage, load sample data
@@ -150,6 +162,11 @@ class QueueSystem {
             console.error('❌ Error loading from storage:', error);
             this.loadSampleData();
         }
+        
+        console.log('🔍 ====== DATA LOADING COMPLETE ======');
+        console.log('📊 Final queue:', this.queue);
+        console.log('📊 Final history:', this.history);
+        console.log('📊 Final next number:', this.nextQueueNumber);
     }
 
     // Save data to localStorage
@@ -259,7 +276,13 @@ class QueueSystem {
             this.currentInterface = 'merchant';
             document.getElementById('customerInterface').style.display = 'none';
             document.getElementById('merchantPortal').style.display = 'block';
+            console.log('🔧 Switched to merchant interface');
+        } else {
+            console.log('🔧 Using customer interface');
         }
+        
+        // Ensure data is loaded regardless of interface
+        console.log('📊 Queue data after interface setup:', this.queue);
     }
 
     checkEmailLinkAccess() {
