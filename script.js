@@ -486,13 +486,23 @@ class QueueSystem {
             status_link: statusLink
         };
 
-        // In a real implementation, you would use EmailJS here
-        // emailjs.send('YOUR_SERVICE_ID', 'queue_join_template', emailData)
-        //     .then(response => console.log('Email sent:', response))
-        //     .catch(error => console.error('Email error:', error));
+        // Send email using EmailJS
+        if (typeof EMAILJS_CONFIG !== 'undefined' && typeof emailjs !== 'undefined') {
+            emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATES.QUEUE_JOIN, emailData)
+                .then(response => {
+                    console.log('Queue join email sent successfully:', response);
+                })
+                .catch(error => {
+                    console.error('Email error:', error);
+                    // Fall back to demo mode if email fails
+                    console.log('Falling back to demo mode');
+                });
+        } else {
+            console.warn('EmailJS not configured. Running in demo mode.');
+        }
 
         // For demo purposes, log the email content
-        console.log('Queue Join Email Sent:', {
+        console.log('Queue Join Email (Demo):', {
             to: queueItem.email,
             subject: `Queue Confirmation #${queueItem.id}`,
             body: `Hello ${queueItem.name}! Your queue number: #${queueItem.id}, Current position: ${position} in line, People queuing: ${this.queue.length}, Estimated wait: ${waitTime} minutes, Check status: ${statusLink}`
@@ -506,13 +516,23 @@ class QueueSystem {
             queue_number: queueItem.id
         };
 
-        // In a real implementation, you would use EmailJS here
-        // emailjs.send('YOUR_SERVICE_ID', 'next_in_line_template', emailData)
-        //     .then(response => console.log('Next in line email sent:', response))
-        //     .catch(error => console.error('Email error:', error));
+        // Send email using EmailJS
+        if (typeof EMAILJS_CONFIG !== 'undefined' && typeof emailjs !== 'undefined') {
+            emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATES.NEXT_IN_LINE, emailData)
+                .then(response => {
+                    console.log('Next in line email sent successfully:', response);
+                })
+                .catch(error => {
+                    console.error('Email error:', error);
+                    // Fall back to demo mode if email fails
+                    console.log('Falling back to demo mode');
+                });
+        } else {
+            console.warn('EmailJS not configured. Running in demo mode.');
+        }
 
         // For demo purposes, log the email content
-        console.log('Next In Line Email Sent:', {
+        console.log('Next In Line Email (Demo):', {
             to: queueItem.email,
             subject: `You're Next in Line! Queue #${queueItem.id}`,
             body: `Hello ${queueItem.name}! You're next in line! Queue #${queueItem.id}. Please make your way to the restaurant now.`
