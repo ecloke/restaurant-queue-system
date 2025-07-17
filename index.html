@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Queue System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Customer Interface -->
+        <div id="customerInterface" class="interface">
+            <header class="header">
+                <h1>Restaurant Queue System</h1>
+                <nav class="nav">
+                    <button id="takeQueueBtn" class="nav-btn active">Take Queue Number</button>
+                    <button id="checkQueueBtn" class="nav-btn">Check Queue</button>
+                </nav>
+            </header>
+
+            <!-- Take Queue Number Page -->
+            <div id="takeQueuePage" class="page active">
+                <div class="queue-stats">
+                    <h2>Current Queue Status</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="peopleInQueue">0</div>
+                            <div class="stat-label">People in Queue</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="estimatedWait">0</div>
+                            <div class="stat-label">Estimated Wait (min)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3>Join the Queue</h3>
+                    <form id="queueForm">
+                        <div class="form-group">
+                            <label for="customerName">Full Name</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" placeholder="0123456789" required>
+                            <small class="help-text">Malaysian format: 01xxxxxxxx</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">Email Address</label>
+                            <input type="email" id="customerEmail" name="customerEmail" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Join Queue</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Check Queue Page -->
+            <div id="checkQueuePage" class="page">
+                <div class="access-message">
+                    <h2>Access via Email Link Only</h2>
+                    <p>To check your queue status, please use the link provided in your email notification.</p>
+                    <div class="email-icon">📧</div>
+                </div>
+                
+                <!-- Queue Status Display (hidden by default) -->
+                <div id="queueStatusDisplay" class="queue-status-display" style="display: none;">
+                    <h2>Your Queue Status</h2>
+                    <div class="status-card">
+                        <div class="status-item">
+                            <label>Name:</label>
+                            <span id="statusName">-</span>
+                        </div>
+                        <div class="status-item">
+                            <label>Queue Number:</label>
+                            <span id="statusQueueNumber">-</span>
+                        </div>
+                        <div class="status-item">
+                            <label>Position in Line:</label>
+                            <span id="statusPosition">-</span>
+                        </div>
+                        <div class="status-item">
+                            <label>Estimated Wait:</label>
+                            <span id="statusWaitTime">-</span>
+                        </div>
+                        <div class="status-item">
+                            <label>Joined at:</label>
+                            <span id="statusJoinTime">-</span>
+                        </div>
+                        <button id="cancelQueueBtn" class="cancel-btn">Cancel My Queue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Merchant Portal -->
+        <div id="merchantPortal" class="interface" style="display: none;">
+            <header class="header">
+                <h1>Merchant Portal</h1>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </header>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="login-container">
+                <h2>Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+            </div>
+
+            <!-- Portal Dashboard -->
+            <div id="portalDashboard" class="portal-dashboard" style="display: none;">
+                <div class="dashboard-tabs">
+                    <button id="waitingListTab" class="tab-btn active">Waiting List</button>
+                    <button id="historyTab" class="tab-btn">History</button>
+                </div>
+
+                <!-- Waiting List -->
+                <div id="waitingList" class="tab-content active">
+                    <h3>Current Queue</h3>
+                    <div id="waitingListContainer" class="queue-list">
+                        <!-- Queue items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div id="historyList" class="tab-content">
+                    <h3>Queue History</h3>
+                    <div id="historyContainer" class="queue-list">
+                        <!-- History items will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <h2>Queue Number Assigned!</h2>
+                <div class="success-details">
+                    <p><strong>Your Queue Number:</strong> <span id="assignedQueueNumber"></span></p>
+                    <p><strong>Position in Line:</strong> <span id="assignedPosition"></span></p>
+                    <p><strong>Estimated Wait:</strong> <span id="assignedWaitTime"></span> minutes</p>
+                </div>
+                <p class="email-notification">📧 A confirmation email has been sent to your email address with your queue details and status check link.</p>
+                <button id="closeModal" class="submit-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
