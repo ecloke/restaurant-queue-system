@@ -266,9 +266,17 @@ class QueueSystem {
         const urlParams = new URLSearchParams(window.location.search);
         const phone = urlParams.get('phone');
         
+        console.log('🔍 Checking email link access...');
+        console.log('📱 Phone from URL:', phone);
+        console.log('🎯 Current interface:', this.currentInterface);
+        console.log('📋 Current queue:', this.queue);
+        
         if (phone && this.currentInterface === 'customer') {
+            console.log('✅ Phone found in URL, showing check queue page');
             this.showPage('checkQueue');
             this.displayQueueStatus(phone);
+        } else {
+            console.log('❌ No phone in URL or not customer interface');
         }
     }
 
@@ -398,9 +406,22 @@ class QueueSystem {
     }
 
     displayQueueStatus(phone) {
+        console.log('🔍 ====== DISPLAY QUEUE STATUS ======');
+        console.log('📱 Searching for phone:', phone);
+        console.log('📋 Queue contents:', this.queue);
+        console.log('🔢 Queue length:', this.queue.length);
+        
+        // Log all phone numbers in queue for comparison
+        console.log('📞 Phone numbers in queue:');
+        this.queue.forEach((item, index) => {
+            console.log(`   ${index + 1}. ${item.phone} (${item.name})`);
+        });
+        
         const queueItem = this.queue.find(item => item.phone === phone);
+        console.log('🎯 Found queue item:', queueItem);
         
         if (!queueItem) {
+            console.log('❌ Queue item not found for phone:', phone);
             document.querySelector('.access-message').style.display = 'block';
             document.getElementById('queueStatusDisplay').style.display = 'none';
             document.querySelector('.access-message h2').textContent = 'Queue Not Found';
